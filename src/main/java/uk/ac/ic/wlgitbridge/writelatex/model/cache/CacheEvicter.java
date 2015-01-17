@@ -16,7 +16,7 @@ public class CacheEvicter<E> {
     }
 
     private void evict() {
-        if (Runtime.getRuntime().freeMemory() < 5000000) {
+        if (Runtime.getRuntime().freeMemory() < 2000000) {
             Util.sout("Performing eviction...");
             Util.sout("Memory before: " + Runtime.getRuntime().freeMemory());
             while (Runtime.getRuntime().freeMemory() < Runtime.getRuntime().maxMemory() / 5) {
