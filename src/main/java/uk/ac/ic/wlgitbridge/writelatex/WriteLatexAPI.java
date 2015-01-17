@@ -26,10 +26,10 @@ public class WriteLatexAPI implements WriteLatexDataSource {
     private final PostbackManager postbackManager;
     private final ProjectLock mainProjectLock;
 
-    public WriteLatexAPI(WLDataModel dataModel) {
-        this.dataModel = dataModel;
+    public WriteLatexAPI(String rootGitDirectoryPath) {
         postbackManager = new PostbackManager();
         mainProjectLock = new ProjectLock();
+        dataModel = new WLDataModel(rootGitDirectoryPath, mainProjectLock);
     }
 
     @Override

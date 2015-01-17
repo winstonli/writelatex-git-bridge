@@ -1,18 +1,20 @@
 package uk.ac.ic.wlgitbridge.writelatex.model.cache;
 
-import uk.ac.ic.wlgitbridge.writelatex.model.WLDataModel;
-
 /**
  * Created by Winston on 17/01/15.
  */
-public class CacheEvicter {
+public class CacheEvicter<E> {
 
-    private final WLDataModel dataStore;
-//    private final Deque<String> queue;
-//    private final Map<>
+    private final EvictionDataSource<E> dataSource;
+    private final Cache<E> cache;
 
-    public CacheEvicter(WLDataModel dataStore) {
-        this.dataStore = dataStore;
+    public CacheEvicter(EvictionDataSource<E> dataSource) {
+        this.dataSource = dataSource;
+        cache = new LRUCache<E>();
+    }
+
+    public void refresh(E element) {
+        cache.add(element);
     }
 
 }

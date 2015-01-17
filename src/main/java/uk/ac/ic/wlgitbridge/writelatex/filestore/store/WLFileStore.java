@@ -42,9 +42,6 @@ public class WLFileStore implements PersistentStoreSource {
     @Override
     public void initFromPersistentStore(PersistentStoreAPI persistentStore) {
         this.persistentStore = persistentStore;
-        for (String projectName : persistentStore.getProjectNames()) {
-            fileStore.put(projectName, new WLDirectoryNode(projectName, attDirectory, rootGitDirectory, persistentStore));
-        }
     }
 
     public static void deleteInDirectory(File directory) {
@@ -65,8 +62,10 @@ public class WLFileStore implements PersistentStoreSource {
 
     public List<WritableRepositoryContents> updateForProject(WLProject project) throws FailedConnectionException,
                                                                                        InvalidProjectException {
+        String name = project.getName();
+        load(name);
         SortedSet<Snapshot> snapshots = project.fetchNewSnapshots();
-        String projectName = project.getName();
+        String projectName = name;
         WLDirectoryNode directoryNode = getDirectoryNodeForProjectName(projectName);
         List<WritableRepositoryContents> writableRepositories = new LinkedList<WritableRepositoryContents>();
         for (Snapshot snapshot : snapshots) {
@@ -79,13 +78,21 @@ public class WLFileStore implements PersistentStoreSource {
         return writableRepositories;
     }
 
+    private void load(String name) {
+        fileStore.put(name, new WLDirectoryNode(name, attDirectory, rootGitDirectory, persistentStore));
+    }
+
     public WLDirectoryNode createNextDirectoryNodeInProjectFromContents(WLProject project, RawDirectoryContents directoryContents) throws IOException, FailedConnectionException {
-        return getDirectoryNodeForProjectName(project.getName()).createFromRawDirectoryContents(directoryContents, attDirectory);
+        String name = project.getName();
+        load(name);
+        return getDirectoryNodeForProjectName(name).createFromRawDirectoryContents(directoryContents, attDirectory);
     }
 
     public void approveCandidateSnapshot(CandidateSnapshot candidateSnapshot) {
+        String projectName = candidateSnapshot.getProjectName();
+        load(projectName);
         WLDirectoryNode directoryNode = candidateSnapshot.getDirectoryNode();
-        fileStore.put(candidateSnapshot.getProjectName(), directoryNode);
+        fileStore.put(projectName, directoryNode);
         directoryNode.updatePersistentStore(persistentStore, null);
     }
 
@@ -96,6 +103,10 @@ public class WLFileStore implements PersistentStoreSource {
             fileStore.put(projectName, directoryNode);
         }
         return directoryNode;
+    }
+
+    public void evict(String element) {
+        fileStore.remove(element);
     }
 
 }

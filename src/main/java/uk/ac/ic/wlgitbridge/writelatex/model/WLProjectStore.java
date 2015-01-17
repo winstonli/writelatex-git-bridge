@@ -26,6 +26,7 @@ public class WLProjectStore implements PersistentStoreSource {
     }
 
     public WLProject getProjectWithName(String name) {
+        load(name);
         WLProject project;
         if (projects.containsKey(name)) {
             project = projects.get(name);
@@ -37,6 +38,10 @@ public class WLProjectStore implements PersistentStoreSource {
         return project;
     }
 
+    private void load(String name) {
+        projects.put(name, new WLProject(name, persistentStore));
+    }
+
     public List<String> getProjectNames() {
         return new ArrayList<String>(projects.keySet());
     }
@@ -44,9 +49,10 @@ public class WLProjectStore implements PersistentStoreSource {
     @Override
     public void initFromPersistentStore(PersistentStoreAPI persistentStore) {
         this.persistentStore = persistentStore;
-        for (String projectName : persistentStore.getProjectNames()) {
-            projects.put(projectName, new WLProject(projectName, persistentStore));
-        }
+    }
+
+    public void evict(String element) {
+        projects.remove(element);
     }
 
 }

@@ -5,11 +5,14 @@ import uk.ac.ic.wlgitbridge.bridge.CandidateSnapshotCallback;
 import uk.ac.ic.wlgitbridge.bridge.RawDirectoryContents;
 import uk.ac.ic.wlgitbridge.bridge.WritableRepositoryContents;
 import uk.ac.ic.wlgitbridge.util.Util;
+import uk.ac.ic.wlgitbridge.writelatex.ProjectLock;
 import uk.ac.ic.wlgitbridge.writelatex.WLDirectoryNodeSnapshot;
 import uk.ac.ic.wlgitbridge.writelatex.api.request.exception.FailedConnectionException;
 import uk.ac.ic.wlgitbridge.writelatex.api.request.getdoc.exception.InvalidProjectException;
 import uk.ac.ic.wlgitbridge.writelatex.api.request.push.exception.SnapshotPostException;
 import uk.ac.ic.wlgitbridge.writelatex.filestore.store.WLFileStore;
+import uk.ac.ic.wlgitbridge.writelatex.model.cache.CacheEvicter;
+import uk.ac.ic.wlgitbridge.writelatex.model.cache.EvictionDataSource;
 import uk.ac.ic.wlgitbridge.writelatex.model.db.PersistentStoreAPI;
 import uk.ac.ic.wlgitbridge.writelatex.model.db.WLGBPersistentStore;
 
@@ -21,16 +24,19 @@ import java.util.List;
 /**
  * Created by Winston on 06/11/14.
  */
-public class WLDataModel implements CandidateSnapshotCallback {
+public class WLDataModel implements CandidateSnapshotCallback, EvictionDataSource<String> {
 
     private final PersistentStoreAPI persistentStore;
     private final WLProjectStore projectStore;
     private final WLFileStore fileStore;
-//    private final CacheEvicter cacheEvicter;
+    private final CacheEvicter cacheEvicter;
+    private final ProjectLock mainProjectLock;
 
-    public WLDataModel(String rootGitDirectoryPath) {
+    public WLDataModel(String rootGitDirectoryPath, ProjectLock mainProjectLock) {
+        this.mainProjectLock = mainProjectLock;
         File rootGitDirectory = initRootGitDirectory(rootGitDirectoryPath);
         persistentStore = new WLGBPersistentStore(rootGitDirectory);
+        cacheEvicter = new CacheEvicter(this);
         projectStore = new WLProjectStore(persistentStore);
         Util.sout("Loaded projects: " + projectStore.getProjectNames().size() + ".");
         fileStore = new WLFileStore(rootGitDirectory, persistentStore);
@@ -45,6 +51,7 @@ public class WLDataModel implements CandidateSnapshotCallback {
     }
 
     public WLProject getProjectWithName(String name) {
+        cacheEvicter.refresh(name);
         return projectStore.getProjectWithName(name);
     }
 
@@ -67,6 +74,17 @@ public class WLDataModel implements CandidateSnapshotCallback {
         File rootGitDirectory = new File(rootGitDirectoryPath);
         rootGitDirectory.mkdirs();
         return rootGitDirectory;
+    }
+
+    @Override
+    public void evict(String element) {
+        mainProjectLock.lockForProject(element);
+        try {
+            projectStore.evict(element);
+            fileStore.evict(element);
+        } finally {
+            mainProjectLock.unlockForProject(element);
+        }
     }
 
 }

@@ -14,7 +14,6 @@ import uk.ac.ic.wlgitbridge.git.servlet.WLGitServlet;
 import uk.ac.ic.wlgitbridge.util.Util;
 import uk.ac.ic.wlgitbridge.writelatex.WriteLatexAPI;
 import uk.ac.ic.wlgitbridge.writelatex.api.request.base.SnapshotAPIRequest;
-import uk.ac.ic.wlgitbridge.writelatex.model.WLDataModel;
 
 import javax.servlet.ServletException;
 import java.io.File;
@@ -87,7 +86,7 @@ public class WLGitBridgeServer {
 
     private void configureJettyServer() throws ServletException, InvalidRootDirectoryPathException {
         HandlerCollection handlers = new HandlerCollection();
-        WriteLatexAPI writeLatexDataSource = new WriteLatexAPI(new WLDataModel(rootGitDirectoryPath));
+        WriteLatexAPI writeLatexDataSource = new WriteLatexAPI(rootGitDirectoryPath);
         handlers.setHandlers(new Handler[] {
                 initResourceHandler(writeLatexDataSource),
                 new SnapshotPushPostbackHandler(writeLatexDataSource),
