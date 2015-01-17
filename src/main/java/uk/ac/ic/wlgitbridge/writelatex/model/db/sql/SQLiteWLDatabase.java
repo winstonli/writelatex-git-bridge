@@ -1,6 +1,5 @@
 package uk.ac.ic.wlgitbridge.writelatex.model.db.sql;
 
-import uk.ac.ic.wlgitbridge.util.Util;
 import uk.ac.ic.wlgitbridge.writelatex.filestore.node.FileNode;
 import uk.ac.ic.wlgitbridge.writelatex.filestore.store.FileIndexStore;
 import uk.ac.ic.wlgitbridge.writelatex.model.db.sql.query.GetFileNodesForProjectNameSQLQuery;
@@ -30,7 +29,6 @@ public class SQLiteWLDatabase {
     public SQLiteWLDatabase(File rootGitDirectory) throws SQLException, ClassNotFoundException {
         File databaseFile = new File(rootGitDirectory, "/.wlgb/wlgb.db");
         databaseFile.getParentFile().mkdirs();
-        Util.sout("Loading data...");
         Class.forName("org.sqlite.JDBC");
         connection = DriverManager.getConnection("jdbc:sqlite:" + databaseFile.getAbsolutePath());
         createTables();

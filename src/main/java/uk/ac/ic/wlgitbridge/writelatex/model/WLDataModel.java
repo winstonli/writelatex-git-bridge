@@ -4,7 +4,6 @@ import uk.ac.ic.wlgitbridge.bridge.CandidateSnapshot;
 import uk.ac.ic.wlgitbridge.bridge.CandidateSnapshotCallback;
 import uk.ac.ic.wlgitbridge.bridge.RawDirectoryContents;
 import uk.ac.ic.wlgitbridge.bridge.WritableRepositoryContents;
-import uk.ac.ic.wlgitbridge.util.Util;
 import uk.ac.ic.wlgitbridge.writelatex.ProjectLock;
 import uk.ac.ic.wlgitbridge.writelatex.WLDirectoryNodeSnapshot;
 import uk.ac.ic.wlgitbridge.writelatex.api.request.exception.FailedConnectionException;
