@@ -7,6 +7,7 @@ import uk.ac.ic.wlgitbridge.util.Util;
  */
 public class CacheEvicter<E> {
 
+    public static final int MB = 1000000;
     private final EvictionDataSource<E> dataSource;
     private final Cache<E> cache;
 
@@ -16,10 +17,10 @@ public class CacheEvicter<E> {
     }
 
     private void evict() {
-        if (Runtime.getRuntime().freeMemory() < 2000000) {
+        if (Runtime.getRuntime().freeMemory() < 16 * MB) {
             Util.sout("Performing eviction...");
             Util.sout("Memory before: " + Runtime.getRuntime().freeMemory());
-            while (Runtime.getRuntime().freeMemory() < Runtime.getRuntime().maxMemory() / 5) {
+            while (!cache.isEmpty() && Runtime.getRuntime().freeMemory() < Runtime.getRuntime().maxMemory() / 5) {
                 E remove = cache.remove();
                 dataSource.evict(remove);
             }

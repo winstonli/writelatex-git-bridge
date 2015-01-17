@@ -78,6 +78,11 @@ public class LRUCache<E> implements Cache<E> {
     }
 
     @Override
+    public boolean isEmpty() {
+        return peek() == null;
+    }
+
+    @Override
     public String toString() {
         return asList().toString();
     }
