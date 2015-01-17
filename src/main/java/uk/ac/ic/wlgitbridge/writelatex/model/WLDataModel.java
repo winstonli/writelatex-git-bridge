@@ -44,7 +44,6 @@ public class WLDataModel implements CandidateSnapshotCallback, EvictionDataSourc
         List<String> excludedFromDeletion = new LinkedList<String>();
         excludedFromDeletion.add(".wlgb");
         WLFileStore.deleteInDirectoryApartFrom(rootGitDirectory, excludedFromDeletion.toArray(new String[] {}));
-        cacheEvicter.start();
     }
 
     public List<WritableRepositoryContents> updateProjectWithName(String name) throws FailedConnectionException, InvalidProjectException {

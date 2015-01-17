@@ -29,24 +29,6 @@ public class CacheEvicter<E> {
         }
     }
 
-    public void start() {
-        new Thread() {
-
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    CacheEvicter.this.evict();
-                }
-            }
-
-        }.start();
-    }
-
     public void refresh(E element) {
         evict();
         cache.add(element);
