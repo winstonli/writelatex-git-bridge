@@ -38,9 +38,7 @@ public class WLDataModel implements CandidateSnapshotCallback, EvictionDataSourc
         persistentStore = new WLGBPersistentStore(rootGitDirectory);
         cacheEvicter = new CacheEvicter(this);
         projectStore = new WLProjectStore(persistentStore);
-        Util.sout("Loaded projects: " + projectStore.getProjectNames().size() + ".");
         fileStore = new WLFileStore(rootGitDirectory, persistentStore);
-        Util.sout("Loaded file store and index tables.");
         List<String> excludedFromDeletion = new LinkedList<String>();
         excludedFromDeletion.add(".wlgb");
         WLFileStore.deleteInDirectoryApartFrom(rootGitDirectory, excludedFromDeletion.toArray(new String[] {}));

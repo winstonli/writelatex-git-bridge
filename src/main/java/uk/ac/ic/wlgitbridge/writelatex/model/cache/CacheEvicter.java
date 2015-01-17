@@ -17,15 +17,15 @@ public class CacheEvicter<E> {
     }
 
     private void evict() {
-        if (Runtime.getRuntime().freeMemory() < 16 * MB) {
+        long before = Runtime.getRuntime().freeMemory();
+        if (before < 16 * MB) {
             Util.sout("Performing eviction...");
-            Util.sout("Memory before: " + Runtime.getRuntime().freeMemory());
             while (!cache.isEmpty() && Runtime.getRuntime().freeMemory() < Runtime.getRuntime().maxMemory() / 5) {
                 E remove = cache.remove();
                 dataSource.evict(remove);
             }
             Runtime.getRuntime().gc();
-            Util.sout("Memory afterwards: " + Runtime.getRuntime().freeMemory());
+            Util.sout("Eviction complete " + before + "B -> " + Runtime.getRuntime().freeMemory() + "B");
         }
     }
 
