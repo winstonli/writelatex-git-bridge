@@ -1,5 +1,7 @@
 package uk.ac.ic.wlgitbridge.writelatex.model.cache;
 
+import uk.ac.ic.wlgitbridge.util.Util;
+
 /**
  * Created by Winston on 17/01/15.
  */
@@ -14,15 +16,16 @@ public class CacheEvicter<E> {
     }
 
     private void evict() {
-        System.out.println();
-        System.out.println("Performing eviction...");
-        System.out.println("Memory before: " + Runtime.getRuntime().freeMemory());
-        for (int i = 0; i < 100; i++) {
-            E remove = cache.remove();
-            dataSource.evict(remove);
+        if (Runtime.getRuntime().freeMemory() < 128000000) {
+            Util.sout("Performing eviction...");
+            Util.sout("Memory before: " + Runtime.getRuntime().freeMemory());
+            while (Runtime.getRuntime().freeMemory() < 128000000) {
+                E remove = cache.remove();
+                dataSource.evict(remove);
+            }
+            Runtime.getRuntime().gc();
+            Util.sout("Memory afterwards: " + Runtime.getRuntime().freeMemory());
         }
-        System.out.println("Memory: " + Runtime.getRuntime().freeMemory());
-        System.out.println();
     }
 
     public void start() {
@@ -44,6 +47,7 @@ public class CacheEvicter<E> {
     }
 
     public void refresh(E element) {
+        evict();
         cache.add(element);
     }
 
