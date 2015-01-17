@@ -15,6 +15,7 @@ import uk.ac.ic.wlgitbridge.writelatex.model.db.WLGBPersistentStore;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -25,15 +26,16 @@ public class WLDataModel implements CandidateSnapshotCallback {
     private final PersistentStoreAPI persistentStore;
     private final WLProjectStore projectStore;
     private final WLFileStore fileStore;
+//    private final CacheEvicter cacheEvicter;
 
     public WLDataModel(String rootGitDirectoryPath) {
         File rootGitDirectory = initRootGitDirectory(rootGitDirectoryPath);
         persistentStore = new WLGBPersistentStore(rootGitDirectory);
-        projectStore = persistentStore.loadProjectStore();
+        projectStore = new WLProjectStore(persistentStore);
         Util.sout("Loaded projects: " + projectStore.getProjectNames().size() + ".");
-        fileStore = persistentStore.loadFileStore();
+        fileStore = new WLFileStore(rootGitDirectory, persistentStore);
         Util.sout("Loaded file store and index tables.");
-        List<String> excludedFromDeletion = projectStore.getProjectNames();
+        List<String> excludedFromDeletion = new LinkedList<String>();
         excludedFromDeletion.add(".wlgb");
         WLFileStore.deleteInDirectoryApartFrom(rootGitDirectory, excludedFromDeletion.toArray(new String[] {}));
     }
