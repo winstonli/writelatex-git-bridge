@@ -9,6 +9,9 @@ import uk.ac.ic.wlgitbridge.test.response.push.data.SnapshotPushResultOutOfDate;
 import uk.ac.ic.wlgitbridge.test.response.push.data.SnapshotPushResultSuccess;
 import uk.ac.ic.wlgitbridge.test.response.push.postback.*;
 import uk.ac.ic.wlgitbridge.test.response.push.postback.invalidfile.InvalidFileError;
+import uk.ac.ic.wlgitbridge.test.response.push.postback.invalidfile.InvalidFileErrorDefault;
+import uk.ac.ic.wlgitbridge.test.response.push.postback.invalidfile.InvalidFileErrorDisallowed;
+import uk.ac.ic.wlgitbridge.test.response.push.postback.invalidfile.InvalidFileErrorUnclean;
 import uk.ac.ic.wlgitbridge.writelatex.api.request.getdoc.SnapshotGetDocResult;
 import uk.ac.ic.wlgitbridge.writelatex.api.request.getforversion.SnapshotAttachment;
 import uk.ac.ic.wlgitbridge.writelatex.api.request.getforversion.SnapshotData;
@@ -138,9 +141,33 @@ public class SnapshotAPIStateBuilder {
         } else if (type.equals("outOfDate")) {
             p = new SnapshotPostbackRequestOutOfDate();
         } else if (type.equals("invalidFiles")) {
-            p = new SnapshotPostbackRequestInvalidFiles(new LinkedList<InvalidFileError>());
+            JsonArray jsonErrors = jsonPostback.get("errors").getAsJsonArray();
+            LinkedList<InvalidFileError> errors = new LinkedList<InvalidFileError>();
+            for (JsonElement elem : jsonErrors) {
+                JsonObject jsonError = elem.getAsJsonObject();
+                String file = jsonError.get("file").getAsString();
+                String state = jsonError.get("state").getAsString();
+                InvalidFileError error;
+                if (state.equals("error")) {
+                    error = new InvalidFileErrorDefault(file);
+                } else if (state.equals("disallowed")) {
+                    error = new InvalidFileErrorDisallowed(file);
+                } else if (state.equals("unclean_name")) {
+                    error = new InvalidFileErrorUnclean(file, jsonError.get("cleanFile").getAsString());
+                } else {
+                    throw new IllegalArgumentException("Invalid file state: " + state);
+                }
+                errors.add(error);
+            }
+            p = new SnapshotPostbackRequestInvalidFiles(errors);
         } else if (type.equals("invalidProject")) {
-            p = new SnapshotPostbackRequestInvalidProject(new LinkedList<String>());
+            LinkedList<String> errors = new LinkedList<String>();
+            JsonArray jsonErrors = jsonPostback.get("errors").getAsJsonArray();
+            for (JsonElement elem : jsonErrors) {
+                String error = elem.getAsString();
+                errors.add(error);
+            }
+            p = new SnapshotPostbackRequestInvalidProject(errors);
         } else if (type.equals("error")) {
             p = new SnapshotPostbackRequestError();
         } else {
