@@ -10,11 +10,12 @@ installDeps() {
 command -v mvn >/dev/null 2>&1 && command -v /usr/lib/jvm/java-7-openjdk-amd64/bin/javac >/dev/null 2>&1 || installDeps
 mvn package -Dmaven.test.skip=true &&\
 sudo cp ./target/writelatex-git-bridge-1.0-SNAPSHOT-jar-with-dependencies.jar /usr/local/sbin/writelatex-git-bridge.jar &&\
-sudo touch /etc/init.d/wlgb
-sudo bash -c 'echo \#!\ /bin/sh > /etc/init.d/wlgb'
-mem=$((`grep MemTotal /proc/meminfo | awk '{print $2}'` * 3 / 4))
-sudo bash -c 'echo DAEMON_ARGS=\"'-Xms"$mem"k\ -Xmx"$mem"k'\ -jar\ /usr/local/sbin/writelatex-git-bridge.jar\ /etc/wlgb/config.json\" >> /etc/init.d/wlgb'
+sudo touch /etc/init.d/wlgb &&\
+sudo bash -c 'echo \#!\ /bin/sh > /etc/init.d/wlgb' &&\
+mem=$((`grep MemTotal /proc/meminfo | awk '{print $2}'` * 3 / 4)) &&\
+sudo bash -c 'echo DAEMON_ARGS=\"'-Xms"$mem"k\ -Xmx"$mem"k'\ -jar\ /usr/local/sbin/writelatex-git-bridge.jar\ /etc/wlgb/config.json\" >> /etc/init.d/wlgb' &&\
 sudo bash -c 'cat ./bin/wlgb >> /etc/init.d/wlgb' &&\
+sudo chmod 700 /etc/init.d/wlgb &&\
 sudo mkdir -p /var/log/wlgb &&\
 sudo mkdir -p /etc/wlgb &&\
 if [ ! -f /etc/wlgb/config.json ]; then
