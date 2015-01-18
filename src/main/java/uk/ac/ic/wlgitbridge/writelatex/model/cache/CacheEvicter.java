@@ -2,6 +2,8 @@ package uk.ac.ic.wlgitbridge.writelatex.model.cache;
 
 import uk.ac.ic.wlgitbridge.util.Util;
 
+import java.util.List;
+
 /**
  * Created by Winston on 17/01/15.
  */
@@ -17,15 +19,18 @@ public class CacheEvicter<E> {
     }
 
     private void evict() {
-        long before = Runtime.getRuntime().freeMemory();
+        Runtime runtime = Runtime.getRuntime();
+        long before = runtime.freeMemory();
         if (before < 16 * MB) {
             Util.sout("Performing eviction...");
-            while (!cache.isEmpty() && Runtime.getRuntime().freeMemory() < Runtime.getRuntime().maxMemory() / 5) {
-                E remove = cache.remove();
-                dataSource.evict(remove);
+            while (!cache.isEmpty() && runtime.freeMemory() < runtime.maxMemory() / 5) {
+                List<E> remove = cache.remove(10);
+                for (E element : remove) {
+                    dataSource.evict(element);
+                }
+                runtime.gc();
             }
-            Runtime.getRuntime().gc();
-            Util.sout("Eviction complete " + before + "B -> " + Runtime.getRuntime().freeMemory() + "B");
+            Util.sout("Eviction complete " + before + "B -> " + runtime.freeMemory() + "B");
         }
     }
 

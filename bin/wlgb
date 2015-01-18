@@ -1,4 +1,3 @@
-#! /bin/sh
 ### BEGIN INIT INFO
 # Provides:          wlgb
 # Required-Start:    $remote_fs $syslog
@@ -22,7 +21,6 @@ PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="Writelatex-Git Bridge startup and stop script"
 NAME=wlgb
 DAEMON=/usr/bin/java
-DAEMON_ARGS="-jar /usr/local/sbin/writelatex-git-bridge.jar /etc/wlgb/config.json"
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 
