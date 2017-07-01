@@ -44,9 +44,7 @@ public class GitBridgeServer {
     private String rootGitDirectoryPath;
     private String apiBaseURL;
 
-    public GitBridgeServer(
-            Config config
-    ) throws ServletException {
+    public GitBridgeServer(Config config) throws ServletException {
         org.eclipse.jetty.util.log.Log.setLog(new NullLogger());
         this.port = config.getPort();
         this.rootGitDirectoryPath = config.getRootGitDirectory();
@@ -84,7 +82,8 @@ public class GitBridgeServer {
             bridge.checkDB();
             jettyServer.start();
             bridge.startBackgroundJobs();
-            Log.info(Util.getServiceName() + "-Git Bridge server started");
+            Log.info(
+                    Util.getServiceName() + "-Git Bridge server started");
             Log.info("Listening on port: " + port);
             Log.info("Bridged to: " + apiBaseURL);
             Log.info("Postback base URL: " + Util.getPostbackURL());
@@ -104,9 +103,7 @@ public class GitBridgeServer {
         }
     }
 
-    private void configureJettyServer(
-            Config config
-    ) throws ServletException {
+    private void configureJettyServer(Config config) throws ServletException {
         HandlerCollection handlers = new HandlerList();
         handlers.addHandler(initApiHandler());
         handlers.addHandler(initGitHandler(config));
@@ -129,9 +126,7 @@ public class GitBridgeServer {
         return api;
     }
 
-    private Handler initGitHandler(
-            Config config
-    ) throws ServletException {
+    private Handler initGitHandler(Config config) throws ServletException {
         final ServletContextHandler servletContextHandler =
                 new ServletContextHandler(ServletContextHandler.SESSIONS);
         if (config.isUsingOauth2()) {
@@ -159,9 +154,8 @@ public class GitBridgeServer {
 
     private Handler initResourceHandler() {
         ResourceHandler resourceHandler = new FileHandler(bridge);
-        resourceHandler.setResourceBase(
-                new File(rootGitDirectoryPath, ".wlgb/atts").getAbsolutePath()
-        );
+        resourceHandler.setResourceBase(new File(
+                rootGitDirectoryPath, ".wlgb/atts").getAbsolutePath());
         return resourceHandler;
     }
 

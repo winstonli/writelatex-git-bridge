@@ -67,7 +67,7 @@ import java.util.*;
  *    @see WLRepositoryResolver - used on all requests associate a repo with a
  *                                project name, or fail
  *
-*     @see WLUploadPackFactory - used to handle clones and fetches
+ *    @see WLUploadPackFactory - used to handle clones and fetches
  *
  *    @see WLReceivePackFactory - used to handle pushes by setting a hook
  *    @see WriteLatexPutHook - the hook used to handle pushes
@@ -315,7 +315,7 @@ public class Bridge {
             Credential oauth2,
             String projectName
     ) throws ServiceMayNotContinueException,
-             GitUserException {
+            GitUserException {
         Log.info("[{}] Checking that project exists", projectName);
         try (LockGuard __ = lock.lockGuard(projectName)) {
             GetDocRequest getDocRequest = new GetDocRequest(
@@ -511,13 +511,11 @@ public class Bridge {
                 projectName,
                 postbackKey
         );
-        try (
-                CandidateSnapshot candidate = createCandidateSnapshot(
-                                projectName,
-                                directoryContents,
-                                oldDirectoryContents
-                );
-        ) {
+        try (CandidateSnapshot candidate = createCandidateSnapshot(
+                projectName,
+                directoryContents,
+                oldDirectoryContents
+        )) {
             Log.info(
                     "[{}] Candindate snapshot created: {}",
                     projectName,
@@ -695,7 +693,7 @@ public class Bridge {
     ) throws IOException, GitUserException {
         String name = repo.getProjectName();
         for (Snapshot snapshot : snapshots) {
-            Map<String, RawFile> fileTable = repo.getFiles();
+            Map<String, RawFile> fileTable = repo.getFiles(50 * 1024 * 1024);
             List<RawFile> files = new LinkedList<>();
             files.addAll(snapshot.getSrcs());
             Map<String, byte[]> fetchedUrls = new HashMap<>();
@@ -785,3 +783,4 @@ public class Bridge {
     }
 
 }
+
