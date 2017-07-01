@@ -55,9 +55,7 @@ public class GitProjectRepo implements ProjectRepo {
     }
 
     @Override
-    public void initRepo(
-            RepoStore repoStore
-    ) throws IOException {
+    public void initRepo(RepoStore repoStore) throws IOException {
         initRepositoryField(repoStore);
         Preconditions.checkState(repository.isPresent());
         Repository repo = this.repository.get();
@@ -66,9 +64,7 @@ public class GitProjectRepo implements ProjectRepo {
     }
 
     @Override
-    public void useExistingRepository(
-            RepoStore repoStore
-    ) throws IOException {
+    public void useExistingRepository(RepoStore repoStore) throws IOException {
         initRepositoryField(repoStore);
         Preconditions.checkState(repository.isPresent());
         Preconditions.checkState(
@@ -77,7 +73,7 @@ public class GitProjectRepo implements ProjectRepo {
     }
 
     @Override
-    public Map<String, RawFile> getFiles()
+    public Map<String, RawFile> getFiles(long maxFileSize)
             throws IOException, GitUserException {
         Preconditions.checkState(repository.isPresent());
         return new RepositoryObjectTreeWalker(
@@ -87,8 +83,7 @@ public class GitProjectRepo implements ProjectRepo {
 
     @Override
     public Collection<String> commitAndGetMissing(
-            GitDirectoryContents contents
-    ) throws IOException {
+            GitDirectoryContents contents) throws IOException {
         try {
             return doCommitAndGetMissing(contents);
         } catch (GitAPIException e) {
@@ -259,7 +254,8 @@ public class GitProjectRepo implements ProjectRepo {
                 name,
                 contents.getDirectory().getAbsolutePath()
         );
-        Util.deleteInDirectoryApartFrom(contents.getDirectory(), ".git");
+        Util.deleteInDirectoryApartFrom(
+                contents.getDirectory(), ".git");
         return missingFiles;
     }
 

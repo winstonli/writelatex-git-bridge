@@ -15,7 +15,6 @@ import uk.ac.ic.wlgitbridge.git.handler.hook.exception.WrongBranchException;
 import uk.ac.ic.wlgitbridge.git.util.RepositoryObjectTreeWalker;
 import uk.ac.ic.wlgitbridge.snapshot.push.exception.InternalErrorException;
 import uk.ac.ic.wlgitbridge.snapshot.push.exception.OutOfDateException;
-import uk.ac.ic.wlgitbridge.snapshot.push.exception.SnapshotPostException;
 import uk.ac.ic.wlgitbridge.util.Log;
 
 import java.io.IOException;

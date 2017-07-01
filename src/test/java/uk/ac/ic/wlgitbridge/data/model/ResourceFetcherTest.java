@@ -28,15 +28,18 @@ import static org.mockserver.model.HttpResponse.response;
  * Created by m on 20/11/15.
  */
 public class ResourceFetcherTest {
+
     @Rule
     public MockServerRule mockServerRule = new MockServerRule(this);
 
     private MockServerClient mockServerClient;
 
     @Test
-    public void fetchesFilesThatAreMissingFromUrlStoreCache() throws IOException, GitUserException {
+    public void fetchesFilesThatAreMissingFromUrlStoreCache()
+            throws IOException, GitUserException {
         final String testProjectName = "123abc";
-        final String testUrl = "http://localhost:" + mockServerRule.getPort() + "/123abc";
+        final String testUrl = "http://localhost:"
+                + mockServerRule.getPort() + "/123abc";
         final String oldTestPath = "testPath";
         final String newTestPath = "missingPath";
 
@@ -58,19 +61,28 @@ public class ResourceFetcherTest {
             oneOf(dbStore).getPathForURLInProject(testProjectName, testUrl);
             will(returnValue(oldTestPath));
 
-            // It should update the URL index store once it has fetched; at present, it does not actually change the stored path.
-            oneOf(dbStore).addURLIndexForProject(testProjectName, testUrl, oldTestPath);
+            // It should update the URL index store once it has fetched;
+            // at present, it does not actually change the stored path.
+            oneOf(dbStore).addURLIndexForProject(
+                    testProjectName, testUrl, oldTestPath);
         }});
 
         ResourceCache resources = new UrlResourceCache(dbStore);
         TemporaryFolder repositoryFolder = new TemporaryFolder();
         repositoryFolder.create();
-        Repository repository = new FileRepositoryBuilder().setWorkTree(repositoryFolder.getRoot()).build();
-        Map<String, RawFile> fileTable = new RepositoryObjectTreeWalker(repository).getDirectoryContents().getFileTable();
-        Map<String, byte[]> fetchedUrls = new HashMap<String, byte[]>();
-        resources.get(testProjectName, testUrl, newTestPath, fileTable, fetchedUrls);
+        Repository repository = new FileRepositoryBuilder()
+                .setWorkTree(repositoryFolder.getRoot())
+                .build();
+        Map<String, RawFile> fileTable
+                = new RepositoryObjectTreeWalker(repository)
+                        .getDirectoryContents()
+                        .getFileTable();
+        Map<String, byte[]> fetchedUrls = new HashMap<>();
+        resources.get(
+                testProjectName, testUrl, newTestPath, fileTable, fetchedUrls);
 
         // We don't bother caching in this case, at present.
         assertEquals(0, fetchedUrls.size());
     }
+
 }
