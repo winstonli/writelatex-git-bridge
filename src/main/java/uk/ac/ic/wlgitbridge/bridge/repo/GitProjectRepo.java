@@ -73,7 +73,7 @@ public class GitProjectRepo implements ProjectRepo {
     }
 
     @Override
-    public Map<String, RawFile> getFiles(long maxFileSize)
+    public Map<String, RawFile> getFiles()
             throws IOException, GitUserException {
         Preconditions.checkState(repository.isPresent());
         return new RepositoryObjectTreeWalker(

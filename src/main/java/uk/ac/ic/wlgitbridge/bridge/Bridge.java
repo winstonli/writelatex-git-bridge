@@ -693,7 +693,7 @@ public class Bridge {
     ) throws IOException, GitUserException {
         String name = repo.getProjectName();
         for (Snapshot snapshot : snapshots) {
-            Map<String, RawFile> fileTable = repo.getFiles(50 * 1024 * 1024);
+            Map<String, RawFile> fileTable = repo.getFiles();
             List<RawFile> files = new LinkedList<>();
             files.addAll(snapshot.getSrcs());
             Map<String, byte[]> fetchedUrls = new HashMap<>();

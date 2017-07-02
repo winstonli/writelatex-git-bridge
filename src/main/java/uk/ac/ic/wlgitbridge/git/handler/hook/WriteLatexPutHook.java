@@ -120,8 +120,7 @@ public class WriteLatexPutHook implements PreReceiveHook {
         bridge.push(
                 oauth2,
                 repository.getWorkTree().getName(),
-                getPushedDirectoryContents(repository,
-                        receiveCommand),
+                getPushedDirectoryContents(repository, receiveCommand),
                 getOldDirectoryContents(repository),
                 hostname
         );
