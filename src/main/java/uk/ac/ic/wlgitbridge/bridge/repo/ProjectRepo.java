@@ -20,7 +20,7 @@ public interface ProjectRepo {
 
     void useExistingRepository(RepoStore repoStore) throws IOException;
 
-    Map<String, RawFile> getFiles(long maxFileSize) throws IOException, GitUserException;
+    Map<String, RawFile> getFiles() throws IOException, GitUserException;
 
     Collection<String> commitAndGetMissing(
             GitDirectoryContents gitDirectoryContents) throws IOException;
