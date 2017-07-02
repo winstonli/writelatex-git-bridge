@@ -41,6 +41,7 @@ import java.util.*;
 public class GitProjectRepo implements ProjectRepo {
 
     private final String projectName;
+
     private Optional<Repository> repository;
 
     public GitProjectRepo(String projectName) {
@@ -194,6 +195,7 @@ public class GitProjectRepo implements ProjectRepo {
         }
     }
 
+    @Override
     public Repository getJGitRepository() {
         return repository.get();
     }
