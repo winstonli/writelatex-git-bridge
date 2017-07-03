@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -45,6 +46,7 @@ public class SwapJobImplTest {
                         tmpFolder,
                         "repostore"
                 ).getAbsolutePath(),
+                Optional.empty(),
                 FileUtils::sizeOfDirectory
         );
         dbStore = new SqliteDBStore(tmpFolder.newFile());
