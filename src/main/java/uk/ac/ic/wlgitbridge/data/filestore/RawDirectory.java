@@ -16,15 +16,6 @@ public class RawDirectory {
         this.fileTable = fileTable;
     }
 
-    public void checkSize(long maxFileSize) throws SizeLimitExceededException {
-        for (RawFile file : fileTable.values()) {
-            long size = file.size();
-            if (size <= maxFileSize) continue;
-            throw new SizeLimitExceededException(
-                    Optional.of(file.getPath()), size, maxFileSize);
-        }
-    }
-
     public Map<String, RawFile> getFileTable() {
         return fileTable;
     }

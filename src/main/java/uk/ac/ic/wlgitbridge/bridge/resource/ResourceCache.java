@@ -18,6 +18,7 @@ public interface ResourceCache {
             String newPath,
             Map<String, RawFile> fileTable,
             Map<String, byte[]> fetchedUrls,
-            Optional<Long> maxFileSize) throws IOException, SizeLimitExceededException;
+            Optional<Long> maxFileSize
+    ) throws IOException, SizeLimitExceededException;
 
 }
