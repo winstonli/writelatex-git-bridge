@@ -101,4 +101,10 @@ public class UrlResourceCacheTest {
         getWithoutLimit();
     }
 
+    @Test (expected = SizeLimitExceededException.class)
+    public void getThrowsIfActualContentTooBig() throws Exception {
+        respondWithContentLength(0, 10);
+        getWithMaxLength(5);
+    }
+
 }
