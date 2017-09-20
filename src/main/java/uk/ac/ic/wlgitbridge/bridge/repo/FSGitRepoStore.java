@@ -24,21 +24,30 @@ import static uk.ac.ic.wlgitbridge.util.Util.deleteInDirectoryApartFrom;
  */
 public class FSGitRepoStore implements RepoStore {
 
+    private static final long DEFAULT_MAX_FILE_SIZE = 50 * 1024 * 1024;
+
     private final String repoStorePath;
 
     private final File rootDirectory;
 
-    private final Optional<Long> maxFileSize;
+    private final long maxFileSize;
 
     private final Function<File, Long> fsSizer;
 
-    public FSGitRepoStore(String repoStorePath, Optional<Long> maxFileSize) {
-        this(repoStorePath, maxFileSize, d -> d.getTotalSpace() - d.getFreeSpace());
+    public FSGitRepoStore(
+            String repoStorePath,
+            Optional<Long> maxFileSize
+    ) {
+        this(
+                repoStorePath,
+                maxFileSize.orElse(DEFAULT_MAX_FILE_SIZE),
+                d -> d.getTotalSpace() - d.getFreeSpace()
+        );
     }
 
     public FSGitRepoStore(
             String repoStorePath,
-            Optional<Long> maxFileSize,
+            long maxFileSize,
             Function<File, Long> fsSizer
     ) {
         this.repoStorePath = repoStorePath;
@@ -61,20 +70,23 @@ public class FSGitRepoStore implements RepoStore {
     public ProjectRepo initRepo(String project) throws IOException {
         GitProjectRepo ret = GitProjectRepo.fromName(project);
         ret.initRepo(this);
-        return new WalkOverrideGitRepo(ret, maxFileSize, Optional.empty());
+        return new WalkOverrideGitRepo(
+                ret, Optional.of(maxFileSize), Optional.empty());
     }
 
     @Override
     public ProjectRepo getExistingRepo(String project) throws IOException {
         GitProjectRepo ret = GitProjectRepo.fromName(project);
         ret.useExistingRepository(this);
-        return new WalkOverrideGitRepo(ret, maxFileSize, Optional.empty());
+        return new WalkOverrideGitRepo(
+                ret, Optional.of(maxFileSize), Optional.empty());
     }
 
     @Override
     public ProjectRepo useJGitRepo(Repository repo, ObjectId commitId) {
         GitProjectRepo ret = GitProjectRepo.fromJGitRepo(repo);
-        return new WalkOverrideGitRepo(ret, maxFileSize, Optional.of(commitId));
+        return new WalkOverrideGitRepo(
+                ret, Optional.of(maxFileSize), Optional.of(commitId));
     }
 
     /* TODO: Perhaps we should just delete bad directories on the fly. */
