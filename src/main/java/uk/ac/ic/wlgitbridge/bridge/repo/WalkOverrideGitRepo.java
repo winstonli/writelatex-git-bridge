@@ -13,7 +13,12 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * We compose because we don't want to deal with the static constructors
+ * This class takes a GitProjectRepo and delegates all calls to it.
+ *
+ * The purpose is to insert a file size check in {@link #getDirectory()}.
+ *
+ * We delegate instead of subclass because we can't override the static
+ * constructors in {@link GitProjectRepo}.
  */
 public class WalkOverrideGitRepo implements ProjectRepo {
 
